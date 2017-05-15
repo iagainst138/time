@@ -21,7 +21,7 @@ input {
     font-family: inherit;
     font-size: inherit;
     border: none;
-    //text-align: center;
+    color: inherit;
     cursor: pointer;
 }
 
