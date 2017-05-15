@@ -1,1 +1,100 @@
-testing
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Time</title>
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0 user-scalable=no" />
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+<body>
+
+<div class="interval_title">
+<label for"startdate">Start Date:</label> <input type="text" id="startdate"> <label for="enddate">End Date:</label> <input type="text" id="enddate">
+</div>
+
+<div class="container" id="blocks">
+</div> <!-- end container -->
+
+<script>
+var blocks = 0;
+var query_dict = {};
+location.search.substr(1).split("&").forEach(function(item) {query_dict[item.split("=")[0]] = item.split("=")[1]});
+
+var start_date = query_dict['start'];
+var end_date = query_dict['end'];
+
+function update() {
+    if(start_date != undefined && end_date != undefined) {
+        start = moment(start_date, 'YYYY-M-D').unix();
+        end = moment(end_date, 'YYYY-M-D').unix();
+        blocks = ((end - start) / 60) / 60;
+        blocks = blocks * 4; // for 15 min blocks
+
+        function draw_boxes() {
+            var content = "";
+            var now = ((moment().unix() - start) / 60) / 60;
+            now = now * 4; // for 15 min blocks
+
+            for(var i=0;i<blocks;i++) {
+                if(i < Math.floor(now)) {
+                    content += '<div class="block passed"></div>';
+                } else if(i > Math.floor(now)) {
+                    content += '<div class="block"></div>';
+                } else {
+                    var m = (new Date()).getMinutes();
+                    var M = 60;
+                    if(m < 15)
+                        M = 15;
+                    else if(m < 30)
+                        M = 30;
+                    else if(m < 45)
+                        M = 45;
+                    var c = 100 - ((100 / 15) * (M - m));
+                    content += '<div class="block current" style="\
+                        background: -moz-linear-gradient(bottom, #FF4136, #FF4136 ' + c + '%, lightgray ' + c + '%, lightgray 100%); \
+                        background: -webkit-linear-gradient(bottom, #FF4136, #FF4136 ' + c + '%, lightgray ' + c + '%, lightgray 100%); \
+                        background: linear-gradient(bottom, #FF4136, #FF4136 ' + c + '%, lightgray ' + c + '%, lightgray 100%); \
+                        "></div>';
+                }
+            }
+            document.getElementById('blocks').innerHTML = content;
+            window.history.pushState('update', '', '/?start=' + start_date + '&end=' + end_date);
+        }
+
+        document.getElementById('startdate').value = start_date;
+        document.getElementById('enddate').value = end_date;
+        draw_boxes();
+        var interval_func = function(){ draw_boxes(); }
+        setInterval(interval_func, 1000 * 10);
+    }
+}
+
+
+$( function() {
+    $( "#startdate" ).datepicker({
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(date_text) {
+            start_date = date_text;
+            update();
+        }
+    });
+    $( "#enddate" ).datepicker({
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(date_text) {
+            end_date = date_text;
+            update();
+        }
+    });
+} );
+
+// attempt an update
+update();
+</script>
+
+</body>
+</html>
