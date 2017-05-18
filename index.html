@@ -27,6 +27,7 @@ location.search.substr(1).split("&").forEach(function(item) {query_dict[item.spl
 
 var start_date = query_dict['start'];
 var end_date = query_dict['end'];
+var path = window.location.pathname;
 
 function update() {
     if(start_date != undefined && end_date != undefined) {
@@ -63,7 +64,7 @@ function update() {
                 }
             }
             document.getElementById('blocks').innerHTML = content;
-            window.history.pushState('update', '', '/?start=' + start_date + '&end=' + end_date);
+            window.history.pushState('update', '', path + '?start=' + start_date + '&end=' + end_date);
         }
 
         document.getElementById('startdate').value = start_date;
