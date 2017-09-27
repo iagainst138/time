@@ -52,7 +52,7 @@ input:hover {
 }
 
 .current {
-    border: 1px solid lightblue;
+    border: 1px solid lightgray;
     /*background: lightblue;*/
     background: none;
 }
